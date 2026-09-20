@@ -48,6 +48,25 @@ Traffic-light status per store per day — Green (reconciled), Amber (partial), 
 
 ---
 
+## Beyond reconciliation: the full "360 system"
+
+What started as a reconciliation tool grew into a 6-module finance system, all on the same Worker:
+
+| Module | What it does |
+|---|---|
+| Bills | Vendor bill capture and tracking |
+| Party Master | Central registry of vendors/parties, feeds the matching engine |
+| Bill ↔ Payment Matching | Links incoming payments to the bills they settle |
+| Manage P&L | Rolls store-level income/expense into a management P&L view |
+| **GST Ledger** | Tracks GST collected/paid per transaction, structured for return filing |
+| **TDS Ledger** | Tracks TDS deducted per vendor payment against the applicable section/rate |
+
+The GST and TDS ledgers were the two modules that mattered most to get right, since both feed statutory filings rather than just internal reporting — a wrong classification here isn't a dashboard glitch, it's a compliance problem. Real source formats forced specific handling: GSTR-2B arrives as 12 state-wise sheets with a two-row merged header, and TDS certificates arrive as one Form 16A **PDF per vendor per quarter** — so ingestion had to handle merged-header spreadsheets and PDF extraction, not just clean CSVs.
+
+One module remains open — a "reconciliation improvement" pass flagged by the finance owner, pending a firmer spec on exactly what additional matching behaviour is needed.
+
+---
+
 ## Architecture
 
 ```
